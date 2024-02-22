@@ -13,20 +13,21 @@ const FriendsListWidget = ({ userId }) => {
   const friends = useSelector((state) => state.user.friends);
 
   const getFriends = async () => {
-    const res = await fetch(`http://localhost:8080/user/${userId}/friends`, {
+    const res = await fetch(`/user/${userId}/friends`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
+    console.log(data);
     dispatch(setFriends({ friends: data }));
   };
 
   useEffect(() => {
     getFriends();
-  }, []);
+  }, [dispatch]);
+
   return (
     <>
-      {console.log(friends)}
       <WidgetWrapper>
         <Typography
           color={palette.neutral.dark}
@@ -36,17 +37,19 @@ const FriendsListWidget = ({ userId }) => {
         >
           Freinds List
         </Typography>
-        <Box display="flex" flexDirection="column" gap="1.5rem">
-          {friends?.userfriends?.map((friend) => (
-            <Friends
-              key={friend._id}
-              friendId={friend._id}
-              name={`${friend.firstName} ${friend.lastName}`}
-              subtitle={friend.occupation}
-              userPicturePath={friend.picturePath}
-            ></Friends>
-          ))}
-        </Box>
+        {friends && (
+          <Box display="flex" flexDirection="column" gap="1.5rem">
+            {friends?.friends?.userfriends?.map((friend) => (
+              <Friends
+                key={friend?._id}
+                friendId={friend?._id}
+                name={`${friend?.firstName} ${friend?.lastName}`}
+                subtitle={friend?.occupation}
+                userPicturePath={friend?.picturePath}
+              ></Friends>
+            ))}
+          </Box>
+        )}
       </WidgetWrapper>
     </>
   );

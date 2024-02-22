@@ -11,11 +11,12 @@ import {
 import { Formik } from "formik";
 import React, { useState } from "react";
 import Dropzone from "react-dropzone";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { setLogin } from "../../states";
 import FlexBetween from "../../components/FlexBetween";
+import { blueGrey } from "@mui/material/colors";
 
 const loginSchema = yup.object().shape({
   email: yup.string().email("invailid email").required("required"),
@@ -27,7 +28,7 @@ const registerSchema = yup.object().shape({
   email: yup.string().email("invailid email").required("required"),
   password: yup.string().required("required"),
   location: yup.string().required("required"),
-  occupation: yup.string().required("required"),
+  accupation: yup.string().required("required"),
   picture: yup.string().required("required"),
 });
 
@@ -41,11 +42,15 @@ const initialValuesRegister = {
   email: "",
   password: "",
   location: "",
-  occupation: "",
+  accupation: "",
   picture: "",
 };
 const Form = () => {
+  const user = useSelector((state) => state.user);
+  console.log(user);
+
   const [pageType, setPageType] = useState("login");
+  const [Error, setError] = useState(null);
   const { palette } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -60,13 +65,10 @@ const Form = () => {
     }
     formData.append("picturePath", values.picture.name);
 
-    const savedUserResponse = await fetch(
-      "http://localhost:8080/auth/register",
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const savedUserResponse = await fetch("/auth/register", {
+      method: "POST",
+      body: formData,
+    });
     const savedUser = await savedUserResponse.json();
     onSubmitProps.resetForm();
 
@@ -75,22 +77,26 @@ const Form = () => {
     }
   };
   const Login = async (values, onSubmitProps) => {
-    const loggedInUserResponse = await fetch(
-      "http://localhost:8080/auth/login",
-      {
+    try {
+      const loggedInUserResponse = await fetch("/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
-      }
-    );
-    const loggedInUser = await loggedInUserResponse.json();
-    onSubmitProps.resetForm();
+      });
+      const loggedInUser = await loggedInUserResponse.json();
+      onSubmitProps.resetForm();
 
-    if (loggedInUser) {
-      dispatch(
-        setLogin({ user: loggedInUser.user, token: loggedInUser.token })
-      );
-      navigate("/");
+      if (loggedInUser) {
+        dispatch(
+          setLogin({ user: loggedInUser.user, token: loggedInUser.token })
+        );
+        if (user?._id) {
+          navigate("/");
+          navigate(0);
+        }
+      }
+    } catch (error) {
+      setError(error.message);
     }
   };
 
@@ -103,6 +109,7 @@ const Form = () => {
   };
   return (
     <>
+      {user && <Navigate to="/" />}
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
@@ -164,8 +171,8 @@ const Form = () => {
                     label="Occupation"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    value={values.occupation}
-                    name="occupation"
+                    value={values.accupation}
+                    name="accupation"
                     errors={Boolean(touched.occupation && errors.occupation)}
                     helperText={touched.occupation && errors.occupation}
                     sx={{ gridColumn: "span 4" }}
@@ -229,6 +236,9 @@ const Form = () => {
                 sx={{ gridColumn: "span 4" }}
               ></TextField>
             </Box>
+            {Error && (
+              <p style={{ color: "red" }}> "Incorrect email or password"</p>
+            )}
             <Button
               fullWidth
               type="submit"
@@ -253,6 +263,7 @@ const Form = () => {
                 "&hover": {
                   cursor: "pointer",
                   color: palette.primary.light,
+                  background: blueGrey,
                 },
               }}
             >

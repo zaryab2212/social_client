@@ -7,7 +7,7 @@ const UserImage = ({ image, size = "60px" }) => {
       <img
         height={size}
         width={size}
-        src={`http://localhost:8080/assets/${image}`}
+        src={`/assets/${image}`}
         style={{ objectFit: "cover", borderRadius: "50%" }}
         alt="User"
       />

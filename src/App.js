@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material";
 import { themeSettings } from "./theme";
+import Protected from "./components/Protected";
 
 function App() {
   const mode = useSelector((state) => state.mode);
@@ -18,9 +19,23 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route
+              path="/"
+              element={
+                <Protected>
+                  <HomePage />
+                </Protected>
+              }
+            />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/profile/:userId" element={<ProfilePage />} />
+            <Route
+              path="/profile/:userId"
+              element={
+                <Protected>
+                  <ProfilePage />
+                </Protected>
+              }
+            />
           </Routes>
         </ThemeProvider>
       </BrowserRouter>

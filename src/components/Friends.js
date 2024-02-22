@@ -1,5 +1,5 @@
 import { useTheme } from "@emotion/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setFriends } from "../states";
@@ -8,23 +8,33 @@ import UserImage from "./UserImage";
 import { Box, IconButton, Typography } from "@mui/material";
 import { PersonAddAlt1Rounded, PersonRemoveRounded } from "@mui/icons-material";
 
-const Friends = ({ friendId, name, subtitle, userPicturePath }) => {
+const Friends = ({
+  friendId,
+  name,
+  subtitle,
+  userPicturePath,
+  type,
+  userDetail,
+}) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { _id } = useSelector((state) => state.user);
-  const token = useSelector((state) => state.token);
-  const friend = useSelector((state) => state.friend);
+  const userData = useSelector((state) => state.user);
+  const user = userDetail ? userDetail : userData;
 
   const { palette } = useTheme();
   const primaryLight = palette.primary.light;
   const primaryDark = palette.primary.dark;
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
+  const ownId = friendId === user._id;
+  const token = useSelector((state) => state.token);
 
-  const isFriend = friend?.find((frnd) => frnd._id === friendId);
+  const isFriend = user?.friends?.friends?.userfriends?.find(
+    (friend) => friendId === friend._id
+  );
 
   const patchFriend = async () => {
-    const res = await fetch(`http://localhost:8080/user/${_id}/${friendId}`, {
+    const res = await fetch(`/user/${user._id}/${friendId}`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -32,19 +42,27 @@ const Friends = ({ friendId, name, subtitle, userPicturePath }) => {
       },
     });
     const data = await res.json();
-    dispatch(setFriends({ friends: data.userfriends }));
+
+    dispatch(
+      setFriends({
+        friends: { userfriends: data.friends },
+      })
+    );
   };
+
+  const handleNavigate = () => {
+    if (!type) {
+      navigate(`/profile/${friendId}`);
+      navigate(0);
+    }
+  };
+
   return (
     <>
       <FlexBetween>
         <FlexBetween gap="1rem">
-          <UserImage image={userPicturePath} size="55px" />
-          <Box
-            onClick={() => {
-              navigate(`/profile/${friendId}`);
-              navigate(0);
-            }}
-          >
+          <UserImage image={userPicturePath} size="45px" />
+          <Box onClick={handleNavigate}>
             <Typography
               color={main}
               variant="h5"
@@ -63,16 +81,18 @@ const Friends = ({ friendId, name, subtitle, userPicturePath }) => {
             </Typography>
           </Box>
         </FlexBetween>
-        <IconButton
-          onClick={() => patchFriend()}
-          sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
-        >
-          {isFriend ? (
-            <PersonRemoveRounded sx={{ color: primaryDark }} />
-          ) : (
-            <PersonAddAlt1Rounded sx={{ color: primaryDark }} />
-          )}
-        </IconButton>
+        {!ownId && !isFriend && !type && (
+          <IconButton
+            onClick={() => patchFriend()}
+            sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
+          >
+            {isFriend ? (
+              <PersonRemoveRounded sx={{ color: primaryDark }} />
+            ) : (
+              <PersonAddAlt1Rounded sx={{ color: primaryDark }} />
+            )}
+          </IconButton>
+        )}
       </FlexBetween>
     </>
   );

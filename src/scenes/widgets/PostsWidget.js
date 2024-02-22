@@ -4,26 +4,26 @@ import { setPost, setPosts } from "../../states";
 import PostWidget from "./PostWidget";
 
 const PostsWidget = ({ userId, isPorfile = false }) => {
-  const dispath = useDispatch();
+  const dispatch = useDispatch();
   const posts = useSelector((state) => state.posts);
   const token = useSelector((state) => state.token);
 
   const getUserPost = async () => {
-    const res = await fetch(`http://localhost:8080/post/${userId}/posts`, {
+    const res = await fetch(`/post/${userId}/posts`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    dispath(setPost({ posts: data }));
+    dispatch(setPost({ posts: data }));
   };
 
   const getPosts = async () => {
-    const res = await fetch(`http://localhost:8080/post/`, {
+    const res = await fetch(`/post/`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
-    dispath(setPosts({ posts: data }));
+    dispatch(setPosts({ posts: data }));
   };
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const PostsWidget = ({ userId, isPorfile = false }) => {
     } else {
       getPosts();
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

@@ -22,7 +22,7 @@ const UserWidget = ({ userId, picturePath }) => {
   const medium = palette.neutral?.medium;
 
   const getUser = async () => {
-    const res = await fetch(`http://localhost:8080/user/${userId}`, {
+    const res = await fetch(`/user/${userId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -36,7 +36,6 @@ const UserWidget = ({ userId, picturePath }) => {
 
   return (
     <>
-      {console.log(userId)}
       {user && (
         <WidgetWrapper>
           <FlexBetween
@@ -76,7 +75,7 @@ const UserWidget = ({ userId, picturePath }) => {
             </Box>
             <Box display="flex" alignItems="center" gap="1rem">
               <WorkOutlineOutlined fontSize="large" sx={{ color: main }} />
-              <Typography color={medium}>{user?.user.accupation}</Typography>
+              <Typography color={medium}>{user?.user.occupation}</Typography>
             </Box>
           </Box>
 
@@ -85,8 +84,7 @@ const UserWidget = ({ userId, picturePath }) => {
             <FlexBetween mb="0.5rem">
               <Typography color={medium}>Who's viewd your profile</Typography>
               <Typography color={main} fontWeight="500">
-                {" "}
-                {user?.user.veiwedProfile}
+                {user?.user.viewedProfile}
               </Typography>
             </FlexBetween>
             <FlexBetween mb="0.5rem">

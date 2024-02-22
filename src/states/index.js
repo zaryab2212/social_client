@@ -23,13 +23,26 @@ export const authSlice = createSlice({
       state.token = null;
     },
     setFriends: (state, action) => {
-      if (state.user) {
-        state.user.friends = action.payload.friends;
-      } else {
-      }
+      state.user.friends = action.payload;
     },
     setPosts: (state, action) => {
-      state.posts = action.payload.posts;
+      if (action.payload.updatePost) {
+        const ind = state.posts.post.findIndex(
+          (item) => item._id === action.payload.updatePost._id
+        );
+        state.posts.post.splice(ind, 1, action.payload.updatePost);
+      } else if (action.payload.postData) {
+        const ind = state.posts.post.findIndex(
+          (item) => item._id === action.payload.postData._id
+        );
+        state.posts.post.splice(ind, 1, action.payload.postData);
+      } else if (action.payload.posttt) {
+        state.posts = {
+          post: [...state.posts.post, action.payload.posttt],
+        };
+      } else {
+        state.posts = action.payload.posts;
+      }
     },
     setPost: (state, action) => {
       const updatedPost = state.posts.post.map((post) => {

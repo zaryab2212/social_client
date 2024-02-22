@@ -15,7 +15,7 @@ const ProfilePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
 
   const getUser = async () => {
-    const res = await fetch(`http://localhost:8080/user/${userId}`, {
+    const res = await fetch(`/user/${userId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -29,7 +29,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      {console.log(userId)}
+      {/* {console.log(user)} */}
       {user && (
         <Box>
           {" "}
@@ -42,7 +42,7 @@ const ProfilePage = () => {
             justifyContent="center"
           >
             <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-              <UserWidget userId={userId} picturePath={user.picturePath} />
+              <UserWidget userId={userId} picturePath={user.user.picturePath} />
               <Box m="2rem 0"></Box>
               <FriendsListWidget userId={userId} />
             </Box>
@@ -50,7 +50,7 @@ const ProfilePage = () => {
               flexBasis={isNonMobileScreens ? "42%" : undefined}
               mt={isNonMobileScreens ? undefined : "2rem"}
             >
-              <MyPostWidget picturePath={user.picturePath} />
+              <MyPostWidget picturePath={user.user.picturePath} />
               <Box m="2rem 0"></Box>
               <PostsWidget userId={userId} isProfile />
             </Box>

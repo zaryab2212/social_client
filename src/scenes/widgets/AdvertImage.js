@@ -22,7 +22,7 @@ const AdvertImage = () => {
           width="100%"
           height="auto"
           alt="advert"
-          src={`http://localhost:8080/assets/_DSC0003.JPG`}
+          src={`/assets/_DSC0003.JPG`}
           style={{ borderRadius: "0.75rem", margin: "0.75rem 0" }}
         />
       </WidgetWrapper>
